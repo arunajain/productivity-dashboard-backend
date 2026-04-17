@@ -22,7 +22,7 @@ It handles **authentication**, **CRUD operations**, **weather API requests**, an
 ### 1 Navigate to the server folder
 
 ```bash
-cd server
+cd productivity-dashboard-backend
 ```
 ### 2 Install dependencies
 

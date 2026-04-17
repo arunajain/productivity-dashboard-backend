@@ -8,10 +8,8 @@ import sendEmail from '../utils/sendEmail.js';
 
 export const registerUser = async(req, res) => {
     try{
-       
         const { error } = validateRegister(req.body); //uses obj destructuring
         if (error) return res.status(422).json({msg: error.details[0].message});
-
         let {name, email, password} = req.body; //uses destructuring
         const chkUserExist = await findUserByEmail(email);
         
