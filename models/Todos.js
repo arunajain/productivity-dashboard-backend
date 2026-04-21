@@ -17,8 +17,7 @@ export const getTodosByGoalId = async (goal_id) => {
 
 export const getTodosByUserId = async (user_id) => {
     const res = await pool.query(
-        'SELECT * FROM todos WHERE user_id = $1',
-        [user_id]
+        'SELECT * FROM todos WHERE user_id = $1 ORDER BY weight DESC LIMIT 10', [user_id]
     );
     return res.rows;
 };
