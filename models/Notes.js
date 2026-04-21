@@ -1,13 +1,13 @@
 import pool from '../config/db.js'; 
-export const createNote = async (title, content, projectId) => {
+export const createNote = async (title, content, userId) => {
   const res = await pool.query(
-    'INSERT INTO notes(title, content, project_id) VALUES ($1, $2, $3) RETURNING *',
-    [title, content, projectId]
+    'INSERT INTO notes(title, content, user_id) VALUES ($1, $2, $3) RETURNING *',
+    [title, content, userId]
   );
   return res.rows[0];
 };
 
-export const getNotesByProjectId = async (projectId) => {
+export const getNotesByUserId = async (userId) => {
   const res = await pool.query('SELECT * FROM notes WHERE project_id = $1', [projectId]);
   return res.rows;
 };

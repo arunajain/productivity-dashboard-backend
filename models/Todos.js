@@ -22,10 +22,10 @@ export const getTodosByUserId = async (user_id) => {
     return res.rows;
 };
 
-export const updateTodo = async (id, title, description) => {
+export const updateTodoById = async (todoid, title, description, goal_id, weight, is_completed) => {
     const res = await pool.query(
-        'UPDATE todos SET title = $1, description = $2 WHERE id = $3 RETURNING *',
-        [title, description, id]
+        'UPDATE todos SET title = $1, description = $2, goal_id = $3, weight = $4, is_completed = $5 WHERE id = $6 RETURNING *',
+        [title, description, goal_id, weight, is_completed, todoid]
     );
     return res.rows[0];
 };

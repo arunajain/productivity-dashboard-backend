@@ -51,14 +51,15 @@ export const deleteTodo = async (req, res)  => {
 export const updateTodo = async (req, res) => {
     try {
         const todo_id = req.params.id;
-        const { content } = req.body;
+        const { title, content, goal_id, weight, completed } = req.body;
         const todo = await Todos.getTodoById(todo_id);
         if (!todo) return res.status(404).json({ msg: 'Todo not found' });
         if (todo.user_id !== req.user.id) return res.status(403).json({ msg: 'Unauthorized' });
-        const updatedTodo = await Todos.updateTodoById(todo_id, content);
+        const updatedTodo = await Todos.updateTodoById(todo_id, title, content, goal_id, weight, completed);
         res.status(200).json({ msg: 'Todo updated successfully', todo: updatedTodo });
     } catch (err) {
         console.log(err);
         res.status(500).json({ msg: 'Server error' });
     }
 };
+
