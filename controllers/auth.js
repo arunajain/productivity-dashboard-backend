@@ -35,12 +35,6 @@ export const registerUser = async(req, res) => {
         console.log(err);
         res.status(500).json({ msg: 'Server error' });
     }
-    // const accessToken = signAccessToken(newUser.id);
-    // console.log("accessToken", accessToken);
-    
-    // return res.status(200).json({
-    //    newUser, msg: "You registered Successfully. Please verify your email to login", accessToken: accessToken
-    // });
 };
 
 export const verifyEmailCode = async(req, res) => {
