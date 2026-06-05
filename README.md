@@ -1,2 +1,54 @@
-# productivity-dashboard-backend
-Scalable and modular backend API built using Node.js, Express, and TypeScript. Implements authentication (JWT), structured service-layer architecture, PostgreSQL database integration, and RESTful APIs for a productivity dashboard system including projects, goals, and task management.
+# ⚙️ Productivity Dashboard – Backend (TypeScript)
+
+A **production-ready backend API** built with **Node.js, Express, and TypeScript**.  
+It powers a Productivity Dashboard application with features like authentication, project management, goals, todos, and notes.
+
+---
+
+## 🚀 Features
+
+- 🔐 JWT Authentication (Login/Register)
+- 📧 Email verification system
+- 📁 Project management APIs
+- 🎯 Goals tracking (CRUD + status workflow)
+- ✅ Todo management system
+- 📝 Notes module
+- 🛡️ Protected routes with middleware
+- 🗄️ PostgreSQL database integration
+- 🔒 Password hashing using bcrypt
+- 📦 Modular architecture (controllers, services, models)
+- ⚡ Type-safe backend using TypeScript
+
+---
+
+## 🛠 Tech Stack
+
+- Node.js
+- Express.js
+- TypeScript
+- PostgreSQL
+- JWT (Authentication)
+- Bcrypt
+- Nodemailer
+- dotenv
+- Joi (Validation)
+
+---
+
+## 📁 Project Structure
+
+```bash
+src/
+├── controllers/
+├── services/
+├── models/
+├── routes/
+├── middleware/
+├── validators/
+├── types/
+├── config/
+├── errors/
+├── utils/
+├── app.ts
+└── server.ts
+```
