@@ -1,12 +1,11 @@
 import Joi from "joi";
 import type { ObjectSchema, ValidationResult } from "joi";
 
-export const validateCreateNote = (
+export const validateNote = (
   body: unknown,
 ): ValidationResult<{
   title: string;
   content: string;
-  user_id: number;
 }> => {
   const schema: ObjectSchema = Joi.object({
     title: Joi.string().min(3).max(255).required().messages({
@@ -14,12 +13,8 @@ export const validateCreateNote = (
       "string.min": "Title must be at least 3 characters",
       "string.max": "Title cannot exceed 255 characters",
     }),
-    content: Joi.string().allow("").required().messages({
-      "string.empty": "Content is required",
-    }),
-    user_id: Joi.number().integer().required().messages({
-      "number.base": "User ID must be a number",
-      "any.required": "User ID is required",
+    content: Joi.string().allow("").optional().messages({
+      "string.base": "Content must be a string",
     }),
   });
   return schema.validate(body);
@@ -28,12 +23,12 @@ export const validateCreateNote = (
 export const validateUpdateNote = (
   body: unknown,
 ): ValidationResult<{
-  note_id: number;
+  noteId: number;
   title?: string;
   content?: string;
 }> => {
   const schema: ObjectSchema = Joi.object({
-    note_id: Joi.number().integer().required().messages({
+    noteId: Joi.number().integer().required().messages({
       "any.required": "Note ID is required",
       "number.base": "Note ID must be a number",
     }),

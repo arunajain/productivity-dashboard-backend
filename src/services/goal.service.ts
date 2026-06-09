@@ -1,4 +1,4 @@
-import Goal from "../models/Goals.js";
+import Goal from "../models/Goal.js";
 import { AppError } from "../errors/AppError.js";
 import type {
   CreateGoalDTO,
@@ -21,6 +21,7 @@ class GoalService {
     }
     const _dueDate = dueDate ? new Date(dueDate) : null;
     const project = await ProjectModel.getById(projectId);
+
     if (!project) {
       throw new AppError("Project not found", 404);
     }

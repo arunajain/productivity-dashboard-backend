@@ -49,7 +49,7 @@ CREATE TABLE goals (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE todos (
+CREATE TABLE tasks (
   id SERIAL PRIMARY KEY,
   goal_id INT REFERENCES goals(id) ON DELETE CASCADE,
   user_id INT REFERENCES users(id) ON DELETE CASCADE,
@@ -101,4 +101,4 @@ create table weather_logs (
 
 CREATE INDEX idx_projects_user ON projects(user_id);
 CREATE INDEX idx_goals_project ON goals(project_id);
-CREATE INDEX idx_todos_goal ON todos(goal_id);
+CREATE INDEX idx_tasks_goal ON tasks(goal_id);

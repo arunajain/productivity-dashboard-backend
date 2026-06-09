@@ -1,5 +1,5 @@
 import pool from "../config/db.js";
-import type { TodoData } from "../types/todo.types.js";
+import type { TodoData } from "../types/task.types.js";
 
 class Todo {
   static async createTodo(

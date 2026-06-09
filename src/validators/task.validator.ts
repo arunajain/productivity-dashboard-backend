@@ -1,5 +1,5 @@
 import Joi, { type ObjectSchema, type ValidationResult } from "joi";
-import type { CreateTodoDTO } from "../types/todo.types.js";
+import type { CreateTodoDTO } from "../types/task.types.js";
 
 /* -----------------------------------------
    CREATE TODO VALIDATION

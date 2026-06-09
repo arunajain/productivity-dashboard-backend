@@ -1,12 +1,24 @@
-export interface NoteData {
+export interface NoteDataRow {
   id: number;
-  title: String;
-  content: String;
-  userId: number;
+  title: string;
+  content: string;
 }
 
-export interface CreateNoteDTO {
+export interface NoteDTO {
   title: string;
   content: string;
   userId: number;
+}
+
+export interface UpdateNoteDTO {
+  noteId: number;
+  title?: string;
+  content?: string;
+  userId: number;
+}
+
+export interface NoteResponse {
+  noteId: number;
+  title: string;
+  content: string;
 }
