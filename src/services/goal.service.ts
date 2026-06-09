@@ -8,17 +8,22 @@ import type {
 import type { ApiResponse } from "../types/common.types.js";
 import type { GoalResponse } from "../types/goal.types.js";
 import { mapGoals, mapGoal } from "../mappers/goal.mapper.js";
+import ProjectModel from "../models/Project.js";
 class GoalService {
   // ---------------- CREATE GOAL ----------------
   static async createGoal(
     data: CreateGoalDTO,
   ): Promise<ApiResponse<GoalResponse>> {
     const { title, description, status, dueDate, projectId } = data;
+
     if (dueDate && isNaN(new Date(dueDate).getTime())) {
       throw new AppError("Invalid due date", 400);
     }
     const _dueDate = dueDate ? new Date(dueDate) : null;
-
+    const project = await ProjectModel.getById(projectId);
+    if (!project) {
+      throw new AppError("Project not found", 404);
+    }
     const goal = await Goal.createGoal(
       title.trim(),
       description?.trim() || "",

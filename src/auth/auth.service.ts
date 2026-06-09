@@ -53,13 +53,23 @@ class AuthService {
     await createVerificationCode(user.id, emailCode, expiresAt);
 
     // fire & forget email
-    await sendEmail({
-      email,
-      name: formattedName,
-      code: emailCode,
-      type: "register",
-    });
+    // await sendEmail({
+    //   email,
+    //   name: formattedName,
+    //   code: emailCode,
+    //   type: "register",
+    // });
 
+    // try {
+    //   sendEmail({
+    //     email,
+    //     name: formattedName,
+    //     code: emailCode,
+    //     type: "register",
+    //   });
+    // } catch (err) {
+    //   console.error("Failed to send verification email:", err);
+    // }
     return {
       success: true,
       message: "Verification code sent to verify email.",
