@@ -6,7 +6,6 @@ export const validateCreateProject = (
 ): ValidationResult<{
   title: string;
   description?: string;
-  user_id: number;
   status?: string;
   weight?: number;
   due_date?: string;
@@ -18,10 +17,6 @@ export const validateCreateProject = (
       "string.max": "Title too long",
     }),
     description: Joi.string().allow("").optional(),
-    user_id: Joi.number().integer().required().messages({
-      "any.required": "User ID is required",
-      "number.base": "User ID must be a number",
-    }),
     status: Joi.string()
       .valid("inactive", "active", "completed", "archived")
       .optional(),
@@ -29,7 +24,7 @@ export const validateCreateProject = (
       "number.min": "Weight must be >= 0",
       "number.max": "Weight must be <= 100",
     }),
-    due_date: Joi.date().optional(),
+    dueDate: Joi.date().optional(),
   });
   return schema.validate(body);
 };
@@ -37,15 +32,15 @@ export const validateCreateProject = (
 export const validateUpdateProject = (
   body: unknown,
 ): ValidationResult<{
-  project_id: number;
+  projectId: number;
   title?: string;
   description?: string;
   status?: string;
   weight?: number;
-  due_date?: string;
+  dueDate?: string;
 }> => {
   const schema: ObjectSchema = Joi.object({
-    project_id: Joi.number().integer().required(),
+    projectId: Joi.number().integer().required(),
     title: Joi.string().min(3).max(255).optional(),
     description: Joi.string().allow("").optional(),
     status: Joi.string()

@@ -8,7 +8,6 @@ import type {
 } from "../types/project.types.js";
 import { AppError } from "../errors/AppError.js";
 import { mapProjects, mapProject } from "../mappers/project.mapper.js";
-import type { UpdateGoalDTO } from "../types/goal.types.js";
 
 class ProjectService {
   static async createProject(
@@ -20,12 +19,13 @@ class ProjectService {
       throw new AppError("Invalid due date", 400);
     }
     const _dueDate = dueDate ? new Date(dueDate) : null;
+
     const result = await ProjectModel.createProject(
       title.trim(),
       description?.trim() || "",
+      userId,
       status || ("inactive" as ProjectStatus),
       _dueDate,
-      userId,
     );
 
     if (!result) {
@@ -46,7 +46,7 @@ class ProjectService {
     };
   }
 
-  static async getProject(
+  static async getProjectByUserId(
     user_id: number,
   ): Promise<ApiResponse<ProjectResponse[]>> {
     const projects = await ProjectModel.getAll(user_id);
@@ -59,8 +59,11 @@ class ProjectService {
   }
 
   // ---------------- GET PROJECT BY ID ----------------
-  static async getProjectById(project_id: number) {
-    const existingProject = await ProjectModel.getById(project_id);
+  static async getProjectById(
+    project_id: number,
+    user_id: number,
+  ): Promise<ApiResponse<ProjectResponse>> {
+    const existingProject = await ProjectModel.getById(project_id, user_id);
     if (!existingProject) {
       throw new AppError("Project not found", 404);
     }
@@ -73,12 +76,15 @@ class ProjectService {
   }
 
   // ---------------- DELETE PROJECT ----------------
-  static async deleteProjectById(project_id: number): Promise<ApiResponse> {
-    const existingProject = await ProjectModel.getById(project_id);
+  static async deleteProjectById(
+    project_id: number,
+    user_id: number,
+  ): Promise<ApiResponse> {
+    const existingProject = await ProjectModel.getById(project_id, user_id);
     if (!existingProject) {
       throw new AppError("Project not found", 404);
     }
-    await ProjectModel.deleteById(project_id);
+    await ProjectModel.deleteById(project_id, user_id);
     return {
       success: true,
       message: "Project deleted successfully",
@@ -88,9 +94,10 @@ class ProjectService {
   // ---------------- UPDATE PROJECT ----------------
   static async updateProject(
     data: UpdateProjectDTO,
+    user_id: number,
   ): Promise<ApiResponse<ProjectResponse>> {
     const { projectId, title, description, status, weight, dueDate } = data;
-    const existingProject = await ProjectModel.getById(projectId);
+    const existingProject = await ProjectModel.getById(projectId, user_id);
     if (!existingProject) {
       throw new AppError("Project not found", 404);
     }
@@ -108,6 +115,7 @@ class ProjectService {
         : existingProject.due_date;
     const updatedProject = await ProjectModel.updateById(
       projectId,
+      user_id,
       updatedTitle,
       updatedDescription,
       updatedWeight,

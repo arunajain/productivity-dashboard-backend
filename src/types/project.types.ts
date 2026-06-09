@@ -22,7 +22,7 @@ export interface CreateProjectDTO {
   userId: number;
   title: string;
   description?: string;
-  status?: ProjectStatus;
+  status?: ProjectStatus | undefined;
   dueDate?: string | null;
 }
 
@@ -30,7 +30,7 @@ export interface UpdateProjectDTO {
   projectId: number;
   title?: string;
   description?: string;
-  status?: ProjectStatus;
+  status?: ProjectStatus | undefined;
   weight?: number;
   dueDate?: string | null;
 }

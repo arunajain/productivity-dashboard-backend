@@ -1,67 +1,122 @@
-import { createProject, getProjectsByUserId, getProjectById, getProjects } from "../models/Project.js";
-
-export const createProject = async (req, res) => {
-    try {
-        const { title, description } = req.body;
-        const user_id = req.user.id;
-        const newProject = await createProject(title, description, user_id);
-        res.status(201).json({ msg: 'Project created successfully', project: newProject });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ msg: 'Server error' });
+import type { Request, Response, NextFunction } from "express";
+import {
+  validateCreateProject,
+  validateUpdateProject,
+  validateProjectId,
+} from "../validators/project.validator.js";
+import { AppError } from "../errors/AppError.js";
+import ProjectService from "../services/project.service.js";
+import type { ProjectStatus } from "../types/project.types.js";
+export const createProject = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { error, value } = validateCreateProject(req.body);
+    if (error) {
+      throw new AppError(
+        error.details?.[0]?.message ?? "Validation error",
+        422,
+      );
     }
+    const user_id = req.user.id;
+    const result = await ProjectService.createProject({
+      userId: user_id,
+      ...value,
+      status: value.status as ProjectStatus | undefined,
+    });
+    res.status(201).json(result);
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const getProjects = async (req, res) => {
-    try {
-        const user_id = req.user.id;
-        const projects = await getProjectsByUserId(user_id);
-        res.status(200).json({ projects });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ msg: 'Server error' });
+export const getProjectsByUserId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { error, value } = validateProjectId(req.params.id);
+    if (error) {
+      throw new AppError(
+        error.details?.[0]?.message ?? "Validation error",
+        422,
+      );
     }
+    const result = await ProjectService.getProjectByUserId(value.id);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const getProjectById = async (req, res) => {
-    try {
-        const project_id = req.params.id;
-        const project = await getProjectById(project_id);
-        if (!project) return res.status(404).json({ msg: 'Project not found' });
-        if (project.user_id !== req.user.id) return res.status(403).json({ msg: 'Unauthorized' });
-        res.status(200).json({ project });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ msg: 'Server error' });
+export const getProjectById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { error, value } = validateProjectId(req.params.id);
+    if (error) {
+      throw new AppError(
+        error.details?.[0]?.message ?? "Validation error",
+        422,
+      );
     }
+    const result = await ProjectService.getProjectById(value.id, req.user.id);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const deleteProject = async (req, res) => {
-    try {
-        const project_id = req.params.id;
-        const project = await getProjectById(project_id);
-        if (!project) return res.status(404).json({ msg: 'Project not found' });
-        if (project.user_id !== req.user.id) return res.status(403).json({ msg: 'Unauthorized' });
-        await Project.deleteProjectById(project_id);
-        res.status(200).json({ msg: 'Project deleted successfully' });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ msg: 'Server error' });
+export const deleteProject = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { error, value } = validateProjectId(req.params.id);
+    if (error) {
+      throw new AppError(
+        error.details?.[0]?.message ?? "Validation error",
+        422,
+      );
     }
+    const project = await ProjectService.deleteProjectById(
+      value.id,
+      req.user.id,
+    );
+    res.status(200).json({ msg: "Project deleted successfully" });
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const updateProject = async (req, res) => {
-    try {
-        const project_id = req.params.id;
-        const { title, description } = req.body;
-        const project = await getProjectById(project_id);
-        if (!project) return res.status(404).json({ msg: 'Project not found' });
-        if (project.user_id !== req.user.id) return res.status(403).json({ msg: 'Unauthorized' });
-        const updatedProject = await Project.updateProjectById(project_id, title, description);
-        res.status(200).json({ msg: 'Project updated successfully', project: updatedProject });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ msg: 'Server error' });
+export const updateProject = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { error, value } = validateUpdateProject({
+      projectId: req.params.id,
+      ...req.body,
+    });
+    if (error) {
+      throw new AppError(
+        error.details?.[0]?.message ?? "Validation error",
+        422,
+      );
     }
-}; 
 
+    const project = await ProjectService.updateProject(
+      { ...value, status: value.status as ProjectStatus | undefined },
+      req.user.id,
+    );
+  } catch (err) {
+    next(err);
+  }
+};

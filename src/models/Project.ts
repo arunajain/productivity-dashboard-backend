@@ -1,17 +1,13 @@
 import pool from "../config/db.js";
-import type {
-  ProjectData,
-  ProjectDataRow,
-  ProjectStatus,
-} from "../types/project.types.js";
+import type { ProjectDataRow, ProjectStatus } from "../types/project.types.js";
 
 class Project {
   static async createProject(
     title: string,
     description: string,
-    status: ProjectStatus,
-    due_date: Date | null,
     user_id: number,
+    status: ProjectStatus = "inactive",
+    due_date: Date | null,
   ): Promise<ProjectDataRow> {
     const res = await pool.query(
       "INSERT INTO projects(title, description, status, due_date, user_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
@@ -30,20 +26,26 @@ class Project {
 
   static async getById(
     project_id: number,
+    user_id: number,
   ): Promise<ProjectDataRow | undefined> {
     const res = await pool.query(
-      "SELECT id, title, description, weight, status, due_date FROM projects WHERE id = $1",
-      [project_id],
+      "SELECT id, title, description, weight, status, due_date FROM projects WHERE id = $1" +
+        " AND user_id = $2",
+      [project_id, user_id],
     );
     return res.rows[0];
   }
 
-  static async deleteById(project_id: number): Promise<void> {
-    await pool.query("DELETE FROM projects WHERE id = $1", [project_id]);
+  static async deleteById(project_id: number, user_id: number): Promise<void> {
+    await pool.query("DELETE FROM projects WHERE id = $1 AND user_id = $2", [
+      project_id,
+      user_id,
+    ]);
   }
 
   static async updateById(
     project_id: number,
+    user_id: number,
     title: string,
     description: string,
     weight: number | null,
@@ -51,7 +53,7 @@ class Project {
     due_date: Date | null,
   ): Promise<ProjectDataRow> {
     const res = await pool.query(
-      "UPDATE projects SET title = $1, description = $2, weight = $3, status = $4, due_date = $5 WHERE id = $6 RETURNING *",
+      "UPDATE projects SET title = $1, description = $2, weight = $3, status = $4, due_date = $5 WHERE id = $6 AND user_id = $7 RETURNING title, description, weight, status, due_date",
       [
         title,
         description,
@@ -59,6 +61,7 @@ class Project {
         status,
         due_date ?? null,
         project_id,
+        user_id,
       ],
     );
     return res.rows[0];
