@@ -1,17 +1,17 @@
 import express from "express";
-import authRouter from "./auth.routes.js";
+import authRoutes from "./auth.routes.js";
+import projectRoutes from "./project.routes.js";
 import goalRoutes from "./goal.routes.js";
+import taskRoutes from "./task.routes.js";
+import noteRoutes from "./note.routes.js";
 import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// Routes
-// app.use("/", indexRouter);
-// app.use("/api/users", verifyToken, usersRouter);
-router.use("/auth", authRouter);
-// app.use("/api/projects", verifyToken, projectRoutes);
-// app.use("/api/notes", verifyToken, notesRoutes);
-router.use("/goals", goalRoutes);
-// app.use("/api/todos", verifyToken, todoRoutes);
+router.use("/auth", authRoutes);
+router.use("/api/project", projectRoutes);
+router.use("/api/goal", goalRoutes);
+router.use("/api/notes", noteRoutes);
+router.use("/api/todos", taskRoutes);
 
 export default router;

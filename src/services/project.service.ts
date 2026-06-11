@@ -1,4 +1,4 @@
-import ProjectModel from "../models/Project.js";
+import ProjectModel from "../repositories/Project.js";
 import type { ApiResponse } from "../types/common.types.js";
 import type {
   CreateProjectDTO,

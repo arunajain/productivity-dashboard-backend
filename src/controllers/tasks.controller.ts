@@ -1,65 +1,131 @@
-import Todos from '../models/todos.js';
-
-export const createTodo = async (req, res) => {
-    try {
-        const { title, description, goal_id } = req.body;
-        const user_id = req.user.id;
-        const newTodo = await Todos.createTodo(title, description, goal_id, user_id);
-        res.status(201).json({ msg: 'Todo created successfully', todo: newTodo });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ msg: 'Server error' });
+import type { Request, Response, NextFunction } from "express";
+import {
+  validateCreateTask,
+  validateUpdateTask,
+} from "../validators/task.validator.js";
+import { validateId } from "../validators/common.validators.js";
+import { AppError } from "../errors/AppError.js";
+import TaskService from "../services/task.service.js";
+import type {
+  SortOrder,
+  TaskQueryOptions,
+  TaskStatus,
+} from "../types/task.types.js";
+export const createTask = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { error, value } = validateCreateTask(req.body);
+    if (error) {
+      throw new AppError(
+        error.details?.[0]?.message ?? "Validation error",
+        422,
+      );
     }
+    const result = await TaskService.createtask(value, req.user.id);
+    res.status(201).json(result);
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const getTodosByUserId = async (req, res) => {
-    try {
-        const user_id = req.user.id;
-        const todos = await Todos.getTodosByUserId(user_id);
-        res.status(200).json({ todos });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ msg: 'Server error' });
+export const getTasks = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const options: TaskQueryOptions = {};
+    if (req.params.id) options["goalId"] = Number(req.params.id);
+    if (
+      req.query.status &&
+      ["inactive", "in_progress", "completed"].includes(
+        req.query.status.toString().toLowerCase(),
+      )
+    )
+      options["status"] = req.query.status
+        .toString()
+        .toLowerCase() as TaskStatus;
+    if (req.query.limit) options["limit"] = Number(req.query.limit);
+    if (req.query.offset) options["offset"] = Number(req.query.offset);
+    if (req.query.sortBy) options["sortBy"] = req.query.sortBy.toString();
+    if (
+      req.query.sortOrder &&
+      ["ASC", "DESC"].includes(req.query.sortOrder.toString().toUpperCase())
+    ) {
+      options["sortOrder"] = req.query.sortOrder
+        .toString()
+        .toUpperCase() as SortOrder;
     }
-};  
 
-export const getTodosByGoalId = async (req, res) => {
-    try {
-        const goal_id = req.params.goal_id;
-        const todos = await Todos.getTodosByGoalId(goal_id);
-        res.status(200).json({ todos });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ msg: 'Server error' });
-    }
-};  
-
-export const deleteTodo = async (req, res)  => {
-    try {
-        const todo_id = req.params.id;
-        const todo = await Todos.getTodoById(todo_id);
-        if (!todo) return res.status(404).json({ msg: 'Todo not found' });
-        if (todo.user_id !== req.user.id) return res.status(403).json({ msg: 'Unauthorized' });
-        await Todos.deleteTodoById(todo_id);
-        res.status(200).json({ msg: 'Todo deleted successfully' });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ msg: 'Server error' });
-    }
+    const result = await TaskService.getTasks(options, req.user.id);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const updateTodo = async (req, res) => {
-    try {
-        const todo_id = req.params.id;
-        const { title, content, goal_id, weight, completed } = req.body;
-        const todo = await Todos.getTodoById(todo_id);
-        if (!todo) return res.status(404).json({ msg: 'Todo not found' });
-        if (todo.user_id !== req.user.id) return res.status(403).json({ msg: 'Unauthorized' });
-        const updatedTodo = await Todos.updateTodoById(todo_id, title, content, goal_id, weight, completed);
-        res.status(200).json({ msg: 'Todo updated successfully', todo: updatedTodo });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ msg: 'Server error' });
+export const getTaskById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { error, value } = validateId(req.params.id);
+    if (error) {
+      throw new AppError(
+        error.details?.[0]?.message ?? "Validation error",
+        422,
+      );
     }
+    const result = await TaskService.getTaskById(value, req.user.id);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
 };
 
+export const deleteTask = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { error, value } = validateId(req.params.id);
+    if (error) {
+      throw new AppError(
+        error.details?.[0]?.message ?? "Validation error",
+        422,
+      );
+    }
+    const result = await TaskService.deletetaskById(value, req.user.id);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateTask = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { error, value } = validateUpdateTask({
+      goalId: req.params.id,
+      ...req.body,
+    });
+    if (error) {
+      throw new AppError(
+        error.details?.[0]?.message ?? "Validation error",
+        422,
+      );
+    }
+    const result = await TaskService.updateTaskById(value, req.user.id);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+};

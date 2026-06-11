@@ -27,17 +27,3 @@ export const validateUpdateGoal = (body: unknown) => {
   }).or("title", "description", "status", "weight", "due_date");
   return schema.validate(body);
 };
-
-export const validateGoalId = (body: unknown) => {
-  const schema = Joi.object({
-    goalId: Joi.number().integer().positive().required(),
-  });
-  return schema.validate(body);
-};
-
-export const validateProjectId = (body: unknown) => {
-  const schema = Joi.object({
-    projectId: Joi.number().integer().positive().required(),
-  });
-  return schema.validate(body);
-};

@@ -1,4 +1,4 @@
-import type User from "../models/User.js";
+import type User from "../repositories/User.js";
 import type { UserPublic } from "./user.types.js";
 
 export interface JwtPayload {

@@ -1,4 +1,4 @@
-import Note from "../models/Note.js";
+import Note from "../repositories/Note.js";
 import { AppError } from "../errors/AppError.js";
 import type {
   NoteDTO,

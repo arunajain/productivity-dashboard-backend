@@ -51,17 +51,3 @@ export const validateUpdateProject = (
   }).or("title", "description", "status", "weight", "due_date");
   return schema.validate(body);
 };
-/* ---------------- PROJECT ID VALIDATION ---------------- */
-export const validateProjectId = (
-  params: unknown,
-): ValidationResult<{
-  id: number;
-}> => {
-  const schema: ObjectSchema = Joi.object({
-    id: Joi.number().integer().required().messages({
-      "any.required": "Project ID is required",
-      "number.base": "Project ID must be a number",
-    }),
-  });
-  return schema.validate(params);
-};

@@ -2,11 +2,11 @@ import type { Request, Response, NextFunction } from "express";
 import {
   validateCreateProject,
   validateUpdateProject,
-  validateProjectId,
 } from "../validators/project.validator.js";
 import { AppError } from "../errors/AppError.js";
 import ProjectService from "../services/project.service.js";
 import type { ProjectStatus } from "../types/project.types.js";
+import { validateId } from "../validators/common.validators.js";
 export const createProject = async (
   req: Request,
   res: Response,
@@ -38,14 +38,14 @@ export const getProjectsByUserId = async (
   next: NextFunction,
 ) => {
   try {
-    const { error, value } = validateProjectId(req.params.id);
+    const { error, value } = validateId(req.params.id);
     if (error) {
       throw new AppError(
         error.details?.[0]?.message ?? "Validation error",
         422,
       );
     }
-    const result = await ProjectService.getProjectByUserId(value.id);
+    const result = await ProjectService.getProjectByUserId(value);
     res.status(200).json(result);
   } catch (err) {
     next(err);
@@ -58,14 +58,14 @@ export const getProjectById = async (
   next: NextFunction,
 ) => {
   try {
-    const { error, value } = validateProjectId(req.params.id);
+    const { error, value } = validateId(req.params.id);
     if (error) {
       throw new AppError(
         error.details?.[0]?.message ?? "Validation error",
         422,
       );
     }
-    const result = await ProjectService.getProjectById(value.id, req.user.id);
+    const result = await ProjectService.getProjectById(value, req.user.id);
     res.status(200).json(result);
   } catch (err) {
     next(err);
@@ -78,17 +78,14 @@ export const deleteProject = async (
   next: NextFunction,
 ) => {
   try {
-    const { error, value } = validateProjectId(req.params.id);
+    const { error, value } = validateId(req.params.id);
     if (error) {
       throw new AppError(
         error.details?.[0]?.message ?? "Validation error",
         422,
       );
     }
-    const project = await ProjectService.deleteProjectById(
-      value.id,
-      req.user.id,
-    );
+    const project = await ProjectService.deleteProjectById(value, req.user.id);
     res.status(200).json({ msg: "Project deleted successfully" });
   } catch (err) {
     next(err);

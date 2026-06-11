@@ -1,5 +1,5 @@
-import User from "../models/User.js";
-import VerificationCodeModel from "../models/VerificationCode.js";
+import User from "../repositories/User.js";
+import VerificationCodeModel from "../repositories/VerificationCode.js";
 import type { VerificationCode } from "../types/auth.types.js";
 import { AppError } from "../errors/AppError.js";
 export const clearVerificationCode = async (userId: number): Promise<void> => {

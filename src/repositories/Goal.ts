@@ -31,10 +31,14 @@ class Goal {
     return res.rows;
   }
 
-  static async getById(goal_id: number): Promise<GoalDataRow | undefined> {
-    const res = await pool.query("SELECT * FROM goals WHERE id = $1", [
-      goal_id,
-    ]);
+  static async getById(
+    goal_id: number,
+    user_id: number,
+  ): Promise<GoalDataRow | undefined> {
+    const res = await pool.query(
+      "SELECT * FROM goals WHERE id = $1 and user_id = $2",
+      [goal_id, user_id],
+    );
     return res.rows[0];
   }
 

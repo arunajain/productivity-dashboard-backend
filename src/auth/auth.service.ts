@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import User from "../models/User.js";
+import User from "../repositories/User.js";
 import type { ApiResponse } from "../types/common.types.js";
 import type {
   RegisterDTO,

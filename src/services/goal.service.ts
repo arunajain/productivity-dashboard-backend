@@ -1,18 +1,19 @@
-import Goal from "../models/Goal.js";
+import Goal from "../repositories/Goal.js";
 import { AppError } from "../errors/AppError.js";
 import type {
   CreateGoalDTO,
   GoalStatus,
   UpdateGoalDTO,
+  GoalResponse,
 } from "../types/goal.types.js";
 import type { ApiResponse } from "../types/common.types.js";
-import type { GoalResponse } from "../types/goal.types.js";
 import { mapGoals, mapGoal } from "../mappers/goal.mapper.js";
-import ProjectModel from "../models/Project.js";
+import ProjectModel from "../repositories/Project.js";
 class GoalService {
   // ---------------- CREATE GOAL ----------------
   static async createGoal(
     data: CreateGoalDTO,
+    userId: number,
   ): Promise<ApiResponse<GoalResponse>> {
     const { title, description, status, dueDate, projectId } = data;
 
@@ -20,7 +21,7 @@ class GoalService {
       throw new AppError("Invalid due date", 400);
     }
     const _dueDate = dueDate ? new Date(dueDate) : null;
-    const project = await ProjectModel.getById(projectId);
+    const project = await ProjectModel.getById(projectId, userId);
 
     if (!project) {
       throw new AppError("Project not found", 404);
@@ -76,8 +77,8 @@ class GoalService {
   }
 
   // ---------------- GET GOAL BY ID ----------------
-  static async getGoalById(goal_id: number) {
-    const existingGoal = await Goal.getById(goal_id);
+  static async getGoalById(goal_id: number, user_id: number) {
+    const existingGoal = await Goal.getById(goal_id, user_id);
     if (!existingGoal) {
       throw new AppError("Goal not found", 404);
     }
@@ -90,8 +91,11 @@ class GoalService {
   }
 
   // ---------------- DELETE GOAL ----------------
-  static async deleteGoalById(goal_id: number): Promise<ApiResponse> {
-    const existingGoal = await Goal.getById(goal_id);
+  static async deleteGoalById(
+    goal_id: number,
+    user_id: number,
+  ): Promise<ApiResponse> {
+    const existingGoal = await Goal.getById(goal_id, user_id);
     if (!existingGoal) {
       throw new AppError("Goal not found", 404);
     }
@@ -105,10 +109,11 @@ class GoalService {
   // ---------------- UPDATE GOAL ----------------
   static async updateGoalById(
     data: UpdateGoalDTO,
+    user_id: number,
   ): Promise<ApiResponse<GoalResponse>> {
     const { goalId, title, description, status, weight, dueDate, projectId } =
       data;
-    const existingGoal = await Goal.getById(goalId);
+    const existingGoal = await Goal.getById(goalId, user_id);
     if (!existingGoal) {
       throw new AppError("Goal not found", 404);
     }
